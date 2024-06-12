@@ -1,7 +1,11 @@
 package br.com.alura.screenmatch.model;
 
+import br.com.alura.screenmatch.repository.SerieRepository;
 import jakarta.persistence.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalDouble;
 
 @Entity
@@ -19,7 +23,8 @@ public class Serie {
     private String atores;
     private String poster;
     private String sinopse;
-
+    @Transient
+    private List<Episodio> episodios = new ArrayList<>();
 
     public Serie(DadosSerie dadosSerie)
     {
@@ -31,6 +36,14 @@ public class Serie {
         this.poster = dadosSerie.poster();
         this.sinopse = dadosSerie.sinopse();
 
+    }
+
+    public List<Episodio> getEpisodios() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<Episodio> episodios) {
+        this.episodios = episodios;
     }
 
     public Long getId() {
