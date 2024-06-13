@@ -1,8 +1,6 @@
 package br.com.alura.screenmatch.model;
 
-import br.com.alura.screenmatch.repository.SerieRepository;
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +12,6 @@ public class Serie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
     private String titulo;
     private Integer totalTemporadas;
     private Double avaliacao;
@@ -23,11 +20,13 @@ public class Serie {
     private String atores;
     private String poster;
     private String sinopse;
-    @Transient
+
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episodio> episodios = new ArrayList<>();
 
-    public Serie(DadosSerie dadosSerie)
-    {
+    public Serie() {}
+
+    public Serie(DadosSerie dadosSerie){
         this.titulo = dadosSerie.titulo();
         this.totalTemporadas = dadosSerie.totalTemporadas();
         this.avaliacao = OptionalDouble.of(Double.valueOf(dadosSerie.avaliacao())).orElse(0);
@@ -35,15 +34,6 @@ public class Serie {
         this.atores = dadosSerie.atores();
         this.poster = dadosSerie.poster();
         this.sinopse = dadosSerie.sinopse();
-
-    }
-
-    public List<Episodio> getEpisodios() {
-        return episodios;
-    }
-
-    public void setEpisodios(List<Episodio> episodios) {
-        this.episodios = episodios;
     }
 
     public Long getId() {
@@ -52,6 +42,15 @@ public class Serie {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Episodio> getEpisodios() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
+        this.episodios = episodios;
     }
 
     public String getTitulo() {
@@ -118,6 +117,8 @@ public class Serie {
                 "\nAvaliação = " + avaliacao +
                 "\nAtores = " + atores +
                 "\nPoster = " + poster +
-                "\nSinopse = " + sinopse + "\n";
+                "\nSinopse = " + sinopse +
+                "\nEpisódios = " + episodios + "\n";
     }
 }
+
