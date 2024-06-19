@@ -1,9 +1,6 @@
 package br.com.alura.screenmatch.principal;
 
-import br.com.alura.screenmatch.model.DadosSerie;
-import br.com.alura.screenmatch.model.DadosTemporada;
-import br.com.alura.screenmatch.model.Episodio;
-import br.com.alura.screenmatch.model.Serie;
+import br.com.alura.screenmatch.model.*;
 import br.com.alura.screenmatch.repository.SerieRepository;
 import br.com.alura.screenmatch.service.ConsumoApi;
 import br.com.alura.screenmatch.service.ConverteDados;
@@ -38,6 +35,8 @@ public class Principal {
                     4 - Buscar série por título
                     5 - Buscar séries por ator
                     6 - Top 5 séries
+                    7 - Buscar séries por categoria
+                    8 - Buscar série para maratonar
                                     
                     0 - Sair                                 
                     """;
@@ -61,8 +60,15 @@ public class Principal {
                     break;
                 case 5:
                     buscarSeriesPorAtor();
+                    break;
                 case 6:
                     buscarTop5Series();
+                    break;
+                case 7:
+                    buscarSeriesPorCategoria();
+                    break;
+                case 8:
+                    buscarSeriesParaMaratonar();
                 case 0:
                     System.out.println("Saindo...");
                     break;
@@ -70,6 +76,27 @@ public class Principal {
                     System.out.println("Opção inválida");
             }
         }
+    }
+
+    private void buscarSeriesParaMaratonar() {
+        System.out.println("Máximo de temporadas: ");
+        var maxTemporadas = leitura.nextInt();
+        System.out.println("Avaliação mínima: ");
+        var avaliacao = leitura.nextDouble();
+        List<Serie> seriesMaratona = repositorio.findByTotalTemporadasIsLessThanEqualAndAndAvaliacaoGreaterThanEqual(maxTemporadas, avaliacao);
+        System.out.println("Séries que se encaixam na busca: ");
+        seriesMaratona.forEach(s ->
+                System.out.println(s.getTitulo() + " - temporadas: " + s.getTotalTemporadas() +  " - nota: " + s.getAvaliacao()));
+    }
+
+    private void buscarSeriesPorCategoria() {
+        System.out.println("Escolha a categoria: ");
+        var nomeGenero = leitura.nextLine();
+        Categoria categoria = Categoria.fromPortugues(nomeGenero);
+
+        List <Serie> series = repositorio.findByGenero(categoria);
+        System.out.println("Séries da categoria: ");
+        series.forEach(System.out::println);
     }
 
     private void buscarTop5Series() {
